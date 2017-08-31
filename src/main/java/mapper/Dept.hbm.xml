@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="entity.Dept" table="`DEPT`" schema="C##SCOTT" dynamic-update="true">
+		<id name="deptNo" type="java.lang.Short" column="`DEPTNO`">
+			<!-- <generator class="assigned"/> -->
+			<generator class="increment"/>
+		</id>
+		<property name="deptName" type="java.lang.String" column="`DNAME`"></property>
+		<property name="location" type="java.lang.String"> <column name="`LOC`"></column></property>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 设置用户界面主题 -->
+	<!-- <constant name="struts.ui.theme" value="simple"/> -->
+	<!-- 处理中文乱码 -->
+	<!-- <constant name="struts.i18n.encoding" value="UTF-8"/> -->
+	<!-- 创建一个default包，继承自Struts2的struts-default包 -->
+	<package name="default" namespace="/" extends="struts-default">
+<!-- 		<interceptors>
+			<interceptor name="myTimer" class="interceptor.MyTimerInterceptor">
+			</interceptor>
+		</interceptors>
+		<action name="myTimer" class="action.MyTimerAction">
+			<result>/index.jsp</result>
+			<interceptor-ref name="myTimer"/>
+			<interceptor-ref name="defaultStack"/>
+		</action> -->
+		<action name="upload" class="action.UploadAction">
+			<!-- 通过param参数设置保存目录和路径 -->
+			<param name="savePath">/upload</param>
+			<result name="success">/upload_success.jsp</result>
+		</action>
+		<action name="download" class="action.FileDownAction">
+			<param name="inputPath">/upload</param>
+			<result name="success" type="stream">
+				<param name="contentType">application/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+	</package>
+</struts>

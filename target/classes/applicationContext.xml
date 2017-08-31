@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context 	
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!-- 数据源的配置 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@192.168.61.140:1521:ORCL" />
+		<property name="username" value="C##SCOTT" />
+		<property name="password" value="tiger" />
+	</bean>
+
+	<!-- SessionFactoryBean 的配置 -->
+	<!-- <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean"> 
+		引入Hibernate配置文件 <property name="configLocations"> <value>classpath:hibernate.cfg.xml</value> 
+		</property> </bean> -->
+
+	<!-- 定义SessionFactory Bean -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 为AnnotationSessionFactoryBean 注入定义好的数据源 -->
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<!-- 添加Hibernate配置参数 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.Oracle12cDialect
+				</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+		<!-- 添加对象关系映射文件 -->
+		<!-- <property name="mappingResources"> <list> <value>mapper/Dept.hbm.xml</value> 
+			<value>mapper/Emp.hbm.xml</value> </list> </property> -->
+		<!-- 添加对象关系映射文件 所在的路径 -->
+		<property name="mappingDirectoryLocations">
+			<list>
+				<value>classpath:mapper/</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置DAO层 -->
+	<bean id="deptDao" class="dao.impl.DeptDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<bean id="empDao" class="dao.impl.EmpDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<!-- 配置业务 Bean -->
+	<bean id="empBiz" class="service.impl.EmpBizImpl">
+		<property name="empDao" ref="empDao"/>
+	</bean>
+	
+	<!-- 定义事务管理器 -->
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+	<!-- 为指定的事务管理器设置事务属性 -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<!-- 定义属性，声明事务规则 -->
+		<tx:attributes>
+			<tx:method name="find*" read-only="true"/>
+			<tx:method name="search*" read-only="true"  />
+			<tx:method name="get*" read-only="true"  />
+			<tx:method name="query*" read-only="true"  />
+			<tx:method name="add*" propagation="REQUIRED"  />
+			<tx:method name="register*" propagation="REQUIRED"  />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="do*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 定义切面 -->
+	<aop:config>
+		<aop:pointcut id="serviceMethod" expression="execution(* service..*.*(..))" />
+		<!-- 将事务增强与切入点组合 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod" />
+	</aop:config>
+	
+</beans>
