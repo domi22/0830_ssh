@@ -5,9 +5,11 @@ import entity.Emp;
 import service.EmpBiz;
 
 public class EmpBizImpl implements EmpBiz {
+	
 	private EmpDao empDao;
 
 	public EmpDao getEmpDao() {
+		System.out.println("222");
 		return empDao;
 	}
 
