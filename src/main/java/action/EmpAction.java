@@ -14,6 +14,7 @@ public class EmpAction extends ActionSupport{
 	private EmpBiz empBiz;
 	
 	public String getEmpInfo() throws Exception{
+		System.out.println("1233");
 		return SUCCESS;
 	}
 	
