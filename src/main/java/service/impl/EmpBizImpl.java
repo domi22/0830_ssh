@@ -9,7 +9,7 @@ public class EmpBizImpl implements EmpBiz {
 	private EmpDao empDao;
 
 	public EmpDao getEmpDao() {
-		System.out.println("222");
+//		System.out.println("222");
 		return empDao;
 	}
 
